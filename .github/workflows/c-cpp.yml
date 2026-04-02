@@ -31,11 +31,23 @@ jobs:
     - name: Configure
       run: ./configure
 
-    - name: Build
-      run: make
+    - name: Build core (plingua compiler + psim simulator)
+      run: make grammar compiler simulator
 
-    - name: Check
+    - name: Build extensions (RR demos, example programs, tests)
+      run: make extensions
+
+    - name: Install plingua (required for reading_example)
+      run: sudo make install
+
+    - name: Build reading example
+      run: make reading_example
+
+    - name: Check (run P-Lingua compiler on example programs)
       run: make check
 
-    - name: Test
+    - name: Test (e2e unit tests)
       run: make test
+
+    - name: Test extensions (RR enhanced + next-directions tests)
+      run: make test_extensions

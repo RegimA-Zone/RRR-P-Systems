@@ -1,91 +1,28 @@
-ODIR = obj
-SDIR = src
-BDIR = bin
-IDIR = include
+#!/bin/sh
+# configure - check for required build dependencies
+set -e
 
-OBJ_PLINGUA = y.tab.o lex.yy.o node_value.o scope.o syntax_tree.o system.o init.o parser.o pattern.o formats.o cplusplus.o 
+check_tool() {
+    if ! command -v "$1" >/dev/null 2>&1; then
+        echo "Error: '$1' is required but not found. Install it and try again." >&2
+        exit 1
+    fi
+}
 
-OBJ_PSIM = psim.o command_line.o
-      
-BIN_PLINGUA = plingua
+check_header() {
+    if ! echo "#include <$2>" | ${CXX:-g++} -x c++ - -fsyntax-only 2>/dev/null; then
+        echo "Error: Header '$2' not found. Install $1 and try again." >&2
+        exit 1
+    fi
+}
 
-BIN_PSIM = psim
+echo "Checking build dependencies..."
 
-CFlags=-c -O3 -Wall -std=gnu++11 
-LDFlags=-lfl -lboost_system -lboost_filesystem -lboost_program_options
-CC=g++
-RM=rm
-FLEX=flex
-BISON=bison
+check_tool "${CXX:-g++}"
+check_tool flex
+check_tool bison
 
-all: grammar compiler simulator
+check_header libboost-dev boost/filesystem.hpp
+check_header libboost-dev boost/program_options.hpp
 
-grammar: y.tab.c lex.yy.c
-
-compiler: $(OBJ_PLINGUA) $(BIN_PLINGUA) 
-
-simulator: $(OBJ_PSIM) $(BIN_PSIM)
-
-# Example use case
-example_foraging: examples/adaptive_foraging.cpp
-	@mkdir -p $(BDIR)
-	$(CC) -O3 -Wall -std=gnu++11 -I$(IDIR) -o $(BDIR)/adaptive_foraging $<
-
-$(BIN_PLINGUA): $(patsubst %,$(ODIR)/%,$(OBJ_PLINGUA))
-	@mkdir -p $(BDIR)
-	$(CC) $^ $(LDFlags) -o $(BDIR)/$@ 
-	
-$(BIN_PSIM): $(patsubst %,$(ODIR)/%,$(OBJ_PSIM))
-	@mkdir -p $(BDIR)
-	$(CC) $^ $(LDFlags) -o $(BDIR)/$@ 	
-
-%.o: $(SDIR)/%.cpp	
-	@mkdir -p $(ODIR)
-	$(CC) $(CFlags) -I$(IDIR) -o $(ODIR)/$@ $<
-
-%.o: $(SDIR)/psystem/%.cpp	
-	@mkdir -p $(ODIR)
-	$(CC) $(CFlags) -I$(IDIR) -o $(ODIR)/$@ $<
-
-%.o: $(SDIR)/parser/%.cpp	
-	@mkdir -p $(ODIR)
-	$(CC) $(CFlags) -I$(IDIR) -o $(ODIR)/$@ $<
-
-%.o: $(SDIR)/simulator/%.cpp	
-	@mkdir -p $(ODIR)
-	$(CC) $(CFlags) -I$(IDIR) -o $(ODIR)/$@ $<
-
-
-%.o: $(SDIR)/simulator/psim/%.cpp	
-	@mkdir -p $(ODIR)
-	$(CC) $(CFlags) -I$(IDIR) -o $(ODIR)/$@ $<
-
-%.o: $(SDIR)/generators/cplusplus/%.cpp	
-	@mkdir -p $(ODIR)
-	$(CC) $(CFlags) -I$(IDIR) -o $(ODIR)/$@ $<
-
-%.o: $(SDIR)/parser/%.c	
-	@mkdir -p $(ODIR)
-	$(CC) $(CFlags) -I$(IDIR) -o $(ODIR)/$@ $<
-
-y.tab.c: $(SDIR)/parser/plingua.y
-	$(BISON) -o $(SDIR)/parser/$@ -yd $<
-
-lex.yy.c: $(SDIR)/parser/plingua.l
-	$(FLEX) -o $(SDIR)/parser/$@ $<  
-	
-clean:
-	$(RM) $(patsubst %,$(ODIR)/%,$(OBJ_PLINGUA)) $(patsubst %,$(ODIR)/%,$(OBJ_PSIM)) $(BDIR)/$(BIN_PLINGUA)  $(BDIR)/$(BIN_PSIM) $(SDIR)/parser/y.tab.c $(SDIR)/parser/y.tab.h $(SDIR)/parser/lex.yy.c
-	
-install:
-	@mkdir -p /usr/local/PLingua/$(BIN_PLINGUA)/
-	@mkdir -p /usr/local/PLingua/$(BIN_PSIM)/
-	@cp $(BDIR)/$(BIN_PLINGUA) /usr/local/PLingua/$(BIN_PLINGUA)/
-	@cp $(BDIR)/$(BIN_PSIM) /usr/local/PLingua/$(BIN_PSIM)/
-	@cp LICENSE /usr/local/PLingua/
-	@ln -sf /usr/local/PLingua/$(BIN_PLINGUA)/$(BIN_PLINGUA) /usr/local/bin/
-	@ln -sf /usr/local/PLingua/$(BIN_PSIM)/$(BIN_PSIM) /usr/local/bin/
-	@cp -rf $(IDIR)/cereal/ /usr/local/include/
-	@mkdir -p /usr/local/include/plingua/
-	@cp -f $(IDIR)/serialization.* /usr/local/include/plingua/
-	
+echo "All dependencies satisfied. Run 'make' to build."

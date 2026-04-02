@@ -121,8 +121,9 @@ int main() {
     std::cout << "Generating implications from RR state..." << std::endl;
     pln_engine.generateRRImplications(&hypergraph);
 
-    std::cout << "Running PLN inference cycle..." << std::endl;
-    pln_engine.performInferenceCycle(&hypergraph);
+    std::cout << "Running PLN inference (deduction + abduction)..." << std::endl;
+    pln_engine.performDeduction();
+    pln_engine.performAbduction();
 
     // Print all implication links
     auto implications = atomspace.findAtomsOfType(Atom::IMPLICATION_LINK);

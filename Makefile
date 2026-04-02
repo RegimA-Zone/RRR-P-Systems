@@ -77,6 +77,12 @@ lex.yy.c: $(SDIR)/parser/plingua.l
 clean:
 	$(RM) $(patsubst %,$(ODIR)/%,$(OBJ_PLINGUA)) $(patsubst %,$(ODIR)/%,$(OBJ_PSIM)) $(BDIR)/$(BIN_PLINGUA)  $(BDIR)/$(BIN_PSIM) $(SDIR)/parser/y.tab.c $(SDIR)/parser/y.tab.h $(SDIR)/parser/lex.yy.c
 	
+check: compiler
+	@echo "Running P-Lingua compiler checks..."
+	$(BDIR)/$(BIN_PLINGUA) examples/transition.pli -o $(ODIR)/test_check.bin
+	$(BDIR)/$(BIN_PLINGUA) examples/adaptive_foraging.pli -o $(ODIR)/test_check2.bin
+	@echo "All checks passed."
+
 install:
 	@mkdir -p /usr/local/PLingua/$(BIN_PLINGUA)/
 	@mkdir -p /usr/local/PLingua/$(BIN_PSIM)/

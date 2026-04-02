@@ -122,8 +122,8 @@ int main() {
     pln_engine.generateRRImplications(&hypergraph);
 
     std::cout << "Running PLN inference (deduction + abduction)..." << std::endl;
-    pln_engine.performDeduction();
-    pln_engine.performAbduction();
+    auto deductions = pln_engine.performDeduction();
+    auto abductions = pln_engine.performAbduction();
 
     // Print all implication links
     auto implications = atomspace.findAtomsOfType(Atom::IMPLICATION_LINK);
@@ -142,13 +142,8 @@ int main() {
     }
 
     // Print inference results
-    auto results = pln_engine.getInferenceResults();
-    if (!results.empty()) {
-        std::cout << "\nInference results:" << std::endl;
-        for (const auto& result : results) {
-            std::cout << "  " << result << std::endl;
-        }
-    }
+    std::cout << "\nInference results: " << deductions.size() << " deductions, "
+              << abductions.size() << " abductions" << std::endl;
 
     // Determine best foraging strategy: arena with highest coupling to forager
     std::string best_arena;

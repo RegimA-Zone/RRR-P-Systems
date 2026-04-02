@@ -20,11 +20,11 @@ BISON=bison
 
 all: grammar compiler simulator
 
-grammar: y.tab.c lex.yy.c
+grammar: $(SDIR)/parser/y.tab.c $(SDIR)/parser/lex.yy.c
 
-compiler: $(OBJ_PLINGUA) $(BIN_PLINGUA) 
+compiler: $(patsubst %,$(ODIR)/%,$(OBJ_PLINGUA)) $(BIN_PLINGUA)
 
-simulator: $(OBJ_PSIM) $(BIN_PSIM)
+simulator: $(patsubst %,$(ODIR)/%,$(OBJ_PSIM)) $(BIN_PSIM)
 
 # Example use case
 example_foraging: examples/adaptive_foraging.cpp
@@ -39,49 +39,58 @@ $(BIN_PSIM): $(patsubst %,$(ODIR)/%,$(OBJ_PSIM))
 	@mkdir -p $(BDIR)
 	$(CC) $^ $(LDFlags) -o $(BDIR)/$@ 	
 
-%.o: $(SDIR)/%.cpp	
+$(ODIR)/%.o: $(SDIR)/%.cpp	
 	@mkdir -p $(ODIR)
-	$(CC) $(CFlags) -I$(IDIR) -o $(ODIR)/$@ $<
+	$(CC) $(CFlags) -I$(IDIR) -o $@ $<
 
-%.o: $(SDIR)/psystem/%.cpp	
+$(ODIR)/%.o: $(SDIR)/psystem/%.cpp	
 	@mkdir -p $(ODIR)
-	$(CC) $(CFlags) -I$(IDIR) -o $(ODIR)/$@ $<
+	$(CC) $(CFlags) -I$(IDIR) -o $@ $<
 
-%.o: $(SDIR)/parser/%.cpp	
+$(ODIR)/%.o: $(SDIR)/parser/%.cpp	
 	@mkdir -p $(ODIR)
-	$(CC) $(CFlags) -I$(IDIR) -o $(ODIR)/$@ $<
+	$(CC) $(CFlags) -I$(IDIR) -o $@ $<
 
-%.o: $(SDIR)/simulator/%.cpp	
+$(ODIR)/%.o: $(SDIR)/simulator/%.cpp	
 	@mkdir -p $(ODIR)
-	$(CC) $(CFlags) -I$(IDIR) -o $(ODIR)/$@ $<
+	$(CC) $(CFlags) -I$(IDIR) -o $@ $<
 
 
-%.o: $(SDIR)/simulator/psim/%.cpp	
+$(ODIR)/%.o: $(SDIR)/simulator/psim/%.cpp	
 	@mkdir -p $(ODIR)
-	$(CC) $(CFlags) -I$(IDIR) -o $(ODIR)/$@ $<
+	$(CC) $(CFlags) -I$(IDIR) -o $@ $<
 
-%.o: $(SDIR)/generators/cplusplus/%.cpp	
+$(ODIR)/%.o: $(SDIR)/generators/cplusplus/%.cpp	
 	@mkdir -p $(ODIR)
-	$(CC) $(CFlags) -I$(IDIR) -o $(ODIR)/$@ $<
+	$(CC) $(CFlags) -I$(IDIR) -o $@ $<
 
-%.o: $(SDIR)/parser/%.c	
+$(ODIR)/%.o: $(SDIR)/parser/%.c	
 	@mkdir -p $(ODIR)
-	$(CC) $(CFlags) -I$(IDIR) -o $(ODIR)/$@ $<
+	$(CC) $(CFlags) -I$(IDIR) -o $@ $<
 
-y.tab.c: $(SDIR)/parser/plingua.y
-	$(BISON) -o $(SDIR)/parser/$@ -yd $<
+$(SDIR)/parser/y.tab.c: $(SDIR)/parser/plingua.y
+	$(BISON) -o $@ -yd $<
 
-lex.yy.c: $(SDIR)/parser/plingua.l
-	$(FLEX) -o $(SDIR)/parser/$@ $<  
+$(SDIR)/parser/lex.yy.c: $(SDIR)/parser/plingua.l
+	$(FLEX) -o $@ $<  
 	
 clean:
-	$(RM) $(patsubst %,$(ODIR)/%,$(OBJ_PLINGUA)) $(patsubst %,$(ODIR)/%,$(OBJ_PSIM)) $(BDIR)/$(BIN_PLINGUA)  $(BDIR)/$(BIN_PSIM) $(SDIR)/parser/y.tab.c $(SDIR)/parser/y.tab.h $(SDIR)/parser/lex.yy.c
+	$(RM) $(patsubst %,$(ODIR)/%,$(OBJ_PLINGUA)) $(patsubst %,$(ODIR)/%,$(OBJ_PSIM)) $(BDIR)/$(BIN_PLINGUA)  $(BDIR)/$(BIN_PSIM) $(SDIR)/parser/y.tab.c $(SDIR)/parser/y.tab.h $(SDIR)/parser/lex.yy.c $(BDIR)/test_e2e
 	
 check: compiler
 	@echo "Running P-Lingua compiler checks..."
 	$(BDIR)/$(BIN_PLINGUA) examples/transition.pli -o $(ODIR)/test_check.bin
-	$(BDIR)/$(BIN_PLINGUA) examples/adaptive_foraging.pli -o $(ODIR)/test_check2.bin
+	$(BDIR)/$(BIN_PLINGUA) examples/sat_cell_division0.pli -o $(ODIR)/test_check2.bin
 	@echo "All checks passed."
+
+test: $(BDIR)/test_e2e
+	@echo "Running e2e unit tests..."
+	$(BDIR)/test_e2e
+	@echo "All e2e tests passed."
+
+$(BDIR)/test_e2e: test_e2e.cpp
+	@mkdir -p $(BDIR)
+	$(CC) -O2 -Wall -std=gnu++11 -I$(IDIR) -o $@ $<
 
 install:
 	@mkdir -p /usr/local/PLingua/$(BIN_PLINGUA)/

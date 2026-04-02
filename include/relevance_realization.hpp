@@ -102,13 +102,15 @@ public:
             trialectic_state = new_state;
         }
         
-        // Update salience based on affordance realization and trialectic coherence
+        // Update salience based on affordance realization and trialectic coherence.
+        // Use (tanh(x) + 1) / 2 to map the tanh output from (-1,1) to (0,1),
+        // keeping salience a valid probability-like measure.
         double trialectic_coherence = computeTrialecticCoherence();
         double relevance_gradient = computeRelevanceGradient();
-        salience = std::tanh(salience + delta_time * (relevance_gradient + 0.3 * trialectic_coherence));
+        salience = (std::tanh(salience + delta_time * (relevance_gradient + 0.3 * trialectic_coherence)) + 1.0) / 2.0;
     }
     
-    // Compute trialectic coherence measure
+    // Compute trialectic coherence measure, normalized to [0, 1]
     double computeTrialecticCoherence() const {
         if (trialectic_state.size() < 3) return 0.0;
         
@@ -118,7 +120,8 @@ public:
             // Measure coherence as correlation between adjacent states
             coherence += trialectic_state[i] * trialectic_state[next];
         }
-        return coherence / trialectic_state.size();
+        // Raw value is in [-1, 1]; map to [0, 1]
+        return (coherence / trialectic_state.size() + 1.0) / 2.0;
     }
 };
 

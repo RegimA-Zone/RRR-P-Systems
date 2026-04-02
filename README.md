@@ -222,6 +222,24 @@ This RR-enhanced membrane computing framework represents a significant advanceme
 - Multi-level emergence patterns
 - Performance optimizations
 
+## 🌿 Example Use Case: Adaptive Foraging Agent
+
+A complete demonstration of the RegimA ecosystem showing a cognitive foraging agent that:
+
+1. **RR Dynamics** — Tracks salience and affordance of food sources through trialectic co-constitution
+2. **PLN Reasoning** — Generates and evaluates implications about foraging strategies
+3. **Scheme Interface** — Queries system state programmatically
+4. **Persistence** — Saves learned knowledge for future sessions
+
+### Build and Run
+
+```bash
+make example_foraging
+./bin/adaptive_foraging
+```
+
+See `examples/adaptive_foraging.cpp` and `examples/adaptive_foraging.pli` for the full source.
+
 ## 📄 License
 
 Licensed under the same terms as the original P-Lingua framework.

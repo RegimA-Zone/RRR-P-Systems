@@ -26,6 +26,11 @@ compiler: $(OBJ_PLINGUA) $(BIN_PLINGUA)
 
 simulator: $(OBJ_PSIM) $(BIN_PSIM)
 
+# Example use case
+example_foraging: examples/adaptive_foraging.cpp
+	@mkdir -p $(BDIR)
+	$(CC) -O3 -Wall -std=gnu++11 -I$(IDIR) -o $(BDIR)/adaptive_foraging $<
+
 $(BIN_PLINGUA): $(patsubst %,$(ODIR)/%,$(OBJ_PLINGUA))
 	@mkdir -p $(BDIR)
 	$(CC) $^ $(LDFlags) -o $(BDIR)/$@ 

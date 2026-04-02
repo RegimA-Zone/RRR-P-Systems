@@ -175,8 +175,7 @@ int main() {
         "(list-rr-nodes)",
         "(get-system-relevance)",
         "(find-patterns)",
-        "(get-salience node-1)",
-        "(run-pln-inference)"
+        "(get-salience node-1)"
     };
 
     for (const auto& cmd : commands) {

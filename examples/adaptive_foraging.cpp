@@ -46,9 +46,9 @@ int main() {
     unsigned forest_id   = hypergraph.addMembraneNode(0, "forest", AARType::ARENA);
 
     // Connect the forager to each food source with INTERACTION edges
-    hypergraph.addRelationEdge(forager_id, berry_id,    RREdge::INTERACTION, 0.5);
-    hypergraph.addRelationEdge(forager_id, mushroom_id, RREdge::INTERACTION, 0.3);
-    hypergraph.addRelationEdge(forager_id, fish_id,     RREdge::INTERACTION, 0.6);
+    hypergraph.addRelationEdge(forager_id, berry_id,    RREdge::INTERACTION, 0.8);
+    hypergraph.addRelationEdge(forager_id, mushroom_id, RREdge::INTERACTION, 0.5);
+    hypergraph.addRelationEdge(forager_id, fish_id,     RREdge::INTERACTION, 0.9);
 
     // Connect environment to forager with CO_CONSTRUCTION
     hypergraph.addRelationEdge(forest_id, forager_id, RREdge::CO_CONSTRUCTION, 0.4);

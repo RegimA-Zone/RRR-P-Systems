@@ -18,7 +18,7 @@ RM=rm
 FLEX=flex
 BISON=bison
 
-all: grammar compiler simulator
+all: grammar compiler simulator extensions
 
 grammar: $(SDIR)/parser/y.tab.c $(SDIR)/parser/lex.yy.c
 
@@ -30,6 +30,39 @@ simulator: $(patsubst %,$(ODIR)/%,$(OBJ_PSIM)) $(BIN_PSIM)
 example_foraging: examples/adaptive_foraging.cpp
 	@mkdir -p $(BDIR)
 	$(CC) -O3 -Wall -std=gnu++11 -I$(IDIR) -o $(BDIR)/adaptive_foraging $<
+
+# RR extension demos and tests
+extensions: example_foraging $(BDIR)/rr_simple_demo $(BDIR)/rr_demo $(BDIR)/demo_repl $(BDIR)/test_rr_enhanced $(BDIR)/test_next_directions
+
+$(BDIR)/rr_simple_demo: examples/rr_simple_demo.cpp
+	@mkdir -p $(BDIR)
+	$(CC) -O3 -Wall -std=gnu++11 -I$(IDIR) -o $@ $<
+
+$(BDIR)/rr_demo: examples/rr_demo.cpp
+	@mkdir -p $(BDIR)
+	$(CC) -O3 -Wall -std=gnu++11 -I$(IDIR) -o $@ $<
+
+$(BDIR)/demo_repl: demo_repl.cpp
+	@mkdir -p $(BDIR)
+	$(CC) -O2 -Wall -std=gnu++11 -I$(IDIR) -o $@ $<
+
+$(BDIR)/test_rr_enhanced: test_rr_enhanced.cpp
+	@mkdir -p $(BDIR)
+	$(CC) -O2 -Wall -std=gnu++11 -I$(IDIR) -o $@ $<
+
+$(BDIR)/test_next_directions: test_next_directions.cpp
+	@mkdir -p $(BDIR)
+	$(CC) -O2 -Wall -std=gnu++11 -I$(IDIR) -o $@ $<
+
+reading_example: examples/reading_example.cpp
+	@mkdir -p $(BDIR)
+	$(CC) -O3 -Wall -std=gnu++11 -I$(IDIR) -I/usr/local/include -o $(BDIR)/reading_example $<
+
+test_extensions: $(BDIR)/test_rr_enhanced $(BDIR)/test_next_directions
+	@echo "Running RR extension tests..."
+	$(BDIR)/test_rr_enhanced
+	$(BDIR)/test_next_directions
+	@echo "All extension tests passed."
 
 $(BIN_PLINGUA): $(patsubst %,$(ODIR)/%,$(OBJ_PLINGUA))
 	@mkdir -p $(BDIR)
@@ -75,7 +108,12 @@ $(SDIR)/parser/lex.yy.c: $(SDIR)/parser/plingua.l
 	$(FLEX) -o $@ $<  
 	
 clean:
-	$(RM) $(patsubst %,$(ODIR)/%,$(OBJ_PLINGUA)) $(patsubst %,$(ODIR)/%,$(OBJ_PSIM)) $(BDIR)/$(BIN_PLINGUA)  $(BDIR)/$(BIN_PSIM) $(SDIR)/parser/y.tab.c $(SDIR)/parser/y.tab.h $(SDIR)/parser/lex.yy.c $(BDIR)/test_e2e
+	$(RM) -f $(patsubst %,$(ODIR)/%,$(OBJ_PLINGUA)) $(patsubst %,$(ODIR)/%,$(OBJ_PSIM)) \
+	  $(BDIR)/$(BIN_PLINGUA) $(BDIR)/$(BIN_PSIM) \
+	  $(BDIR)/adaptive_foraging $(BDIR)/rr_simple_demo $(BDIR)/rr_demo \
+	  $(BDIR)/demo_repl $(BDIR)/test_rr_enhanced $(BDIR)/test_next_directions \
+	  $(BDIR)/reading_example $(BDIR)/test_e2e \
+	  $(SDIR)/parser/y.tab.c $(SDIR)/parser/y.tab.h $(SDIR)/parser/lex.yy.c
 	
 check: compiler
 	@echo "Running P-Lingua compiler checks..."

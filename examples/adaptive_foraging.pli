@@ -1,4 +1,4 @@
-@include "rr_triadic_model.pli"
+@include "rr_trialectic_model.pli"
 @model<relevance_realization>
 
 def main()

@@ -1,7 +1,6 @@
 #ifndef _RR_SIMULATOR_HPP_
 #define _RR_SIMULATOR_HPP_
 
-#include <simulator/simulator.hpp>
 #include <relevance_realization.hpp>
 #include <atomspace_integration.hpp>
 #include <memory>

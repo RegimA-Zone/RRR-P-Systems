@@ -169,6 +169,19 @@ Available Scheme commands:
 - **PLN Inference**: O(r·a) for r rules, a atoms
 - **Pattern Matching**: O(p·log(a)) for p patterns
 
+## 💱 FinOps Membrane Reconciliation
+
+`examples/finops/` mirrors the accospace + isabellex + fincosys finops models
+from `ReZorg/plingua`: the accospace metagraph of an ecosystem as a transition
+P system where cents are tokens, checks are annihilations `L, R --> #`, all
+membranes of a kind (statement / account / entity) fire the same schema in the
+same step, and reconciled membranes dissolve so the skin's halting multiset is
+the exception report. Relevance-realization reading: the sediment is what the
+system could not make irrelevant. The whole-corpus model reconciles 17
+entities, 69 accounts and 3,433 statements in seven synchronous steps. Spec and
+generator: `ReZorg/plingua` `docs/FINOPS_MEMBRANE_SPEC.md`, `fincosys/accospace`
+`scripts/export_membrane_psystem.py`.
+
 ## 🔬 Research Applications
 
 ### Cognitive Architecture Integration
